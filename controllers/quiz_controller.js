@@ -17,7 +17,14 @@ exports.load = function(req, res, next, quizId) {
 
 // GET /quizes
 exports.index = function(req, res) {
-  models.Quiz.findAll().then(
+  var filtro;
+  if(req.query.search){
+    var search='%'+req.query.search.replace(/ /g, '%')+'%';
+    filtro={where: ["pregunta like ?", search], order: 'pregunta ASC'}
+  } else {
+    filtro={order: 'pregunta ASC'};
+  }
+  models.Quiz.findAll(filtro).then(
     function(quizes) {
     res.render('quizes/index.ejs', { quizes: quizes});
     }
@@ -37,3 +44,4 @@ exports.answer = function(req, res) {
   }
   res.render('quizes/answer', { quiz: req.quiz, respuesta: resultado});
 };
+
