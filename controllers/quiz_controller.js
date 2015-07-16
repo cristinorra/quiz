@@ -20,9 +20,9 @@ exports.index = function(req, res) {
   var filtro;
   if(req.query.search){
     var search='%'+req.query.search.replace(/ /g, '%')+'%';
-    filtro={where: ["pregunta like ?", search], order: 'pregunta ASC'}
+    filtro={where: ["pregunta like ?", search], order: 'tema ASC, pregunta ASC'}
   } else {
-    filtro={order: 'pregunta ASC'};
+    filtro={order: 'tema ASC, pregunta ASC'};
   }
   models.Quiz.findAll(filtro).then(
     function(quizes) {
@@ -48,7 +48,7 @@ exports.answer = function(req, res) {
 // GET /quizes/new
 exports.new = function(req, res) {
   var quiz = models.Quiz.build( // crea el objeto quiz
-    {pregunta: "Pregunta", respuesta: "Respuesta"}
+    {pregunta: "Pregunta", respuesta: "Respuesta", tema: "Otros"}
   );
   res.render('quizes/new', {quiz: quiz, errors: [] });
 };
@@ -63,7 +63,7 @@ exports.create = function(req, res) {
         res.render('quizes/new', {quiz: quiz, errors: err.errors});
       } else {
         //guardar en DB los campos pregunta y respuesta de quiz
-        quiz.save({fields: ["pregunta", "respuesta"]}).then(
+        quiz.save({fields: ["pregunta", "respuesta", "tema"]}).then(
           //Redireccion HTTP (URL relativo) lista de preguntas
           function() {res.redirect('/quizes');}
         );
@@ -82,6 +82,7 @@ exports.edit = function(req, res) {
 exports.update = function(req, res) {
   req.quiz.pregunta  = req.body.quiz.pregunta;
   req.quiz.respuesta = req.body.quiz.respuesta;
+  req.quiz.tema = req.body.quiz.tema;
 
   //validar la coherencia del quiz
   req.quiz.validate().then(
@@ -90,7 +91,7 @@ exports.update = function(req, res) {
         res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
       } else {
         //guardar en DB los campos pregunta y respuesta de quiz
-        req.quiz.save({fields: ["pregunta", "respuesta"]}).then(
+        req.quiz.save({fields: ["pregunta", "respuesta", "tema"]}).then(
           //Redireccion HTTP (URL relativo) lista de preguntas
           function() {res.redirect('/quizes');}
         );
