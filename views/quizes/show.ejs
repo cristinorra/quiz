@@ -3,3 +3,8 @@
   <input type="text" name="respuesta" value="Responda aquí" />
   <input type="submit" value="Enviar"><p>
 </form>
+
+<p><a href="/quizes/<%= quiz.id %>/comments/new"><button>Nuevo comentario</button></a></p>
+
+<% include ../comments/_list.ejs %>
+
