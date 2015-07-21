@@ -57,7 +57,7 @@ exports.new = function(req, res) {
 };
 
 // POST /quizes/create
-exports.create = function(req, res) {
+exports.create = function(req, res, next) {
   var quiz = models.Quiz.build(req.body.quiz);
   //validar la coherencia del quiz
   quiz.validate().then(
@@ -69,10 +69,10 @@ exports.create = function(req, res) {
         quiz.save({fields: ["pregunta", "respuesta", "tema"]}).then(
           //Redireccion HTTP (URL relativo) lista de preguntas
           function() {res.redirect('/quizes');}
-        );
+        ).catch (function(error) {next(error);});
       }
     }
-  );
+  ).catch (function(error) {next(error);});
 };
 
 // GET /quizes/:id/edit
@@ -82,7 +82,7 @@ exports.edit = function(req, res) {
 };
 
 // PUT /quizes/:id
-exports.update = function(req, res) {
+exports.update = function(req, res, next) {
   req.quiz.pregunta  = req.body.quiz.pregunta;
   req.quiz.respuesta = req.body.quiz.respuesta;
   req.quiz.tema = req.body.quiz.tema;
@@ -97,10 +97,10 @@ exports.update = function(req, res) {
         req.quiz.save({fields: ["pregunta", "respuesta", "tema"]}).then(
           //Redireccion HTTP (URL relativo) lista de preguntas
           function() {res.redirect('/quizes');}
-        );
+        ).catch (function(error) {next(error);});
       }
     }
-  );
+  ).catch (function(error) {next(error);});
 };
 
 // DELETE /quizes/:id
