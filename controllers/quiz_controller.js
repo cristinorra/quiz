@@ -111,3 +111,27 @@ exports.destroy = function(req, res, next) {
     }
   ).catch(function(error){next(error)});
 }
+
+// GET /quizes/statistics
+exports.statistics = function(req, res, next) {
+  var statistics = {};
+  var errors = [];
+  models.Quiz.count().then(
+    function(count) {
+      statistics.quizes = count;
+      models.Comment.count().then(
+        function(count) {
+          statistics.comments = count;
+          statistics.commentsByQuiz = count/statistics.quizes;
+          models.Comment.aggregate('QuizId', 'count', {'distinct': true }).then(
+            function(count) {
+              statistics.commented = count;
+              statistics.uncommented = statistics.quizes-count;
+              res.render('quizes/statistics.ejs', { statistics: statistics, errors: errors });
+            }
+          ).catch (function(error) {next(error);})
+        }
+      ).catch (function(error) {next(error);})
+    }
+  ).catch (function(error) {next(error);})
+};
